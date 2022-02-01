@@ -1,7 +1,9 @@
 package ChromeTest;
 
-import com.codeborne.selenide.Condition;
+
 import com.ProfilePageObject;
+
+import com.codeborne.selenide.Selenide;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -10,9 +12,12 @@ import org.junit.Before;
 import org.junit.Test;
 import com.*;
 
-import static com.codeborne.selenide.Selenide.closeWebDriver;
+
 import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.sleep;
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 
 public class ProfileChromeTest {
@@ -21,9 +26,9 @@ public class ProfileChromeTest {
     public static String userPassword = RandomStringUtils.randomAlphabetic(10);
     public static String userMail = RandomStringUtils.randomAlphabetic(5) + "@" + RandomStringUtils.randomAlphabetic(5) + ".ru";
 
-
     @Before
     public void createTestUser() {
+
         String registerRequestBody = "{\"name\":\"" + userName + "\","
                 + "\"password\":\"" + userPassword + "\","
                 + "\"email\":\"" + userMail + "\"}";
@@ -34,6 +39,7 @@ public class ProfileChromeTest {
                 .when()
                 .post("https://stellarburgers.nomoreparties.site/api/auth/register");
     }
+
     LoginPageObject loginPageObject =
             open(LoginPageObject.URL, LoginPageObject.class);
 
@@ -45,61 +51,64 @@ public class ProfileChromeTest {
 
     @Test
     @DisplayName("Вход в Личный кабинет с главной страницы")
-    public void enterProfileFromMainPage(){
-        MainPageObject.enterAccount.click();
-        LoginPageObject.fieldLogEmail.setValue(userMail);
-        LoginPageObject.fieldPassword.setValue(userPassword);
-        LoginPageObject.buttonEnterOrRegistration.click();
-        MainPageObject.personalCabinet.click();
-        ProfilePageObject.textWhatYouCanInProfile.shouldHave(Condition.exactText("В этом разделе вы можете изменить свои персональные данные"));
-        closeWebDriver();
+    public void enterProfileFromMainPage() {
+
+        MainPageObject.clickEnterAccount();
+        LoginPageObject.setLogEmail(userMail);
+        LoginPageObject.setPassword(userPassword);
+        LoginPageObject.clickEnter();
+        MainPageObject.clickPersonalCabinet();
+        assertThat("Вход в личный кабинет не удался", ProfilePageObject.textWhatYouCanInProfile.getText(), anyOf(containsString("В этом разделе вы можете изменить свои персональные данные")));
+
     }
 
     @Test
     @DisplayName("Переход из личного кабинета на главную страницу через Конструктор")
-    public void fromProfileToMainPageWithConstructor(){
-        MainPageObject.enterAccount.click();
-        LoginPageObject.fieldLogEmail.setValue(userMail);
-        LoginPageObject.fieldPassword.setValue(userPassword);
-        LoginPageObject.buttonEnterOrRegistration.click();
-        MainPageObject.personalCabinet.click();
-        ProfilePageObject.konstruktor.click();
-        MainPageObject.orderThat.shouldHave(Condition.exactText("Оформить заказ"));
-        closeWebDriver();
+    public void fromProfileToMainPageWithConstructor() {
+
+        MainPageObject.clickEnterAccount();
+        LoginPageObject.setLogEmail(userMail);
+        LoginPageObject.setPassword(userPassword);
+        LoginPageObject.clickEnter();
+        MainPageObject.clickPersonalCabinet();
+        ProfilePageObject.clickKonstruktor();
+        assertThat("Не найдена кнопка Конструктор в Личном кабинете", MainPageObject.orderThat.getText(), hasToString("Оформить заказ"));
     }
 
     @Test
     @DisplayName("Переход из личного кабинета на главную страницу через логотип")
-    public void fromProfileToMainPageWithLogo(){
-        MainPageObject.enterAccount.click();
-        LoginPageObject.fieldLogEmail.setValue(userMail);
-        LoginPageObject.fieldPassword.setValue(userPassword);
-        LoginPageObject.buttonEnterOrRegistration.click();
-        MainPageObject.personalCabinet.click();
-        ProfilePageObject.logo.click();
-        MainPageObject.orderThat.shouldHave(Condition.exactText("Оформить заказ"));
-        closeWebDriver();
+    public void fromProfileToMainPageWithLogo() {
+
+        MainPageObject.clickEnterAccount();
+        LoginPageObject.setLogEmail(userMail);
+        LoginPageObject.setPassword(userPassword);
+        LoginPageObject.clickEnter();
+        MainPageObject.clickPersonalCabinet();
+        ProfilePageObject.clickLogo();
+        assertThat("Логотип не ведёт на главный экран", MainPageObject.orderThat.getText(), hasToString("Оформить заказ"));
     }
 
     @Test
     @DisplayName("Выход из аккаунта")
-    public void exitFromAccount(){
-        MainPageObject.enterAccount.click();
-        LoginPageObject.fieldLogEmail.setValue(userMail);
-        LoginPageObject.fieldPassword.setValue(userPassword);
-        LoginPageObject.buttonEnterOrRegistration.click();
-        MainPageObject.personalCabinet.click();
-        ProfilePageObject.exitAccount.click();
-        LoginPageObject.buttonEnterOrRegistration.shouldHave(Condition.exactText("Войти"));
-        closeWebDriver();
+    public void exitFromAccount() {
+
+        MainPageObject.clickEnterAccount();
+        LoginPageObject.setLogEmail(userMail);
+        LoginPageObject.setPassword(userPassword);
+        LoginPageObject.clickEnter();
+        MainPageObject.clickPersonalCabinet();
+        ProfilePageObject.clickExitAccount();
+        sleep(1000);
+        assertThat("Выход не ведёт на страницу входа", LoginPageObject.buttonEnterOrRegistration.getText(), hasToString("Войти"));
     }
 
     @After
-    public void tearDown(){
+    public void tearDown() {
+
         String registerRequestBody = "{\"password\":\"" + userPassword + "\","
                 + "\"email\":\"" + userMail + "\"}";
 
-        String token =  given()
+        String token = given()
                 .header("Content-type", "application/json")
                 .and()
                 .body(registerRequestBody)
@@ -114,6 +123,11 @@ public class ProfileChromeTest {
 
     }
 
+    @After
+    public void closeWebDriver() {
+
+        Selenide.closeWebDriver();
+    }
 
 
 }

@@ -1,22 +1,23 @@
 package YandexBrowserTest;
 
-import com.codeborne.selenide.Condition;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import com.*;
 
-import static com.codeborne.selenide.Selenide.closeWebDriver;
-import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
 
 
 public class ConstructorYandexTest {
 
     @Before
-    public void before(){
+    public void before() {
 
-        System.setProperty("webdriver.chrome.driver","src/test/resources/yandexdriver.exe");
+        System.setProperty("webdriver.chrome.driver", "src/test/resources/yandexdriver.exe");
 
         MainPageObject mainPageObject =
                 open(MainPageObject.URL, MainPageObject.class);
@@ -24,37 +25,44 @@ public class ConstructorYandexTest {
 
     @Test
     @DisplayName("Переход к разделу соусы")
-    public void selectSauces(){
+    public void selectSauces() {
 
-        MainPageObject.constructorSauses.click();
-        MainPageObject.constructorSauses
-                .shouldHave(Condition.cssClass("tab_tab_type_current__2BEPc"));
-        MainPageObject.constructorBoolki
-                .shouldNotHave(Condition.cssClass("tab_tab_type_current__2BEPc"));
-        closeWebDriver();
+        MainPageObject.clickSauses();
+        sleep(1000);
+
+        assertThat("Выбраны не соусы", MainPageObject.constructorNachinki.toString(), not(containsString("tab_tab_type_current__2BEPc")));
+        assertThat("Соусы не выбраны", MainPageObject.constructorSauses.toString(), anyOf(containsString("tab_tab_type_current__2BEPc")));
+
     }
 
     @Test
     @DisplayName("Переход к разделу булки")
-    public void selectBoolki(){
-        MainPageObject.constructorNachinki.click();
-        MainPageObject.constructorBoolki.click();
-        MainPageObject.constructorSauses
-                .shouldNotHave(Condition.cssClass("tab_tab_type_current__2BEPc"));
-        MainPageObject.constructorBoolki
-                .shouldHave(Condition.cssClass("tab_tab_type_current__2BEPc"));
-        closeWebDriver();
+    public void selectBoolki() {
+        MainPageObject.clickNachinki();
+        MainPageObject.clickSauses();
+        MainPageObject.clickBoolki();
+        sleep(1000);
+
+        assertThat("Выбраны не булки", MainPageObject.constructorNachinki.toString(), not(containsString("tab_tab_type_current__2BEPc")));
+        assertThat("Булки не выбраны", MainPageObject.constructorBoolki.toString(), anyOf(containsString("tab_tab_type_current__2BEPc")));
+
     }
 
     @Test
     @DisplayName("Переход к разделу начинки")
-    public void selectNachinki(){
+    public void selectNachinki() {
 
-        MainPageObject.constructorNachinki.click();
-        MainPageObject.constructorSauses
-                .shouldNotHave(Condition.cssClass("tab_tab_type_current__2BEPc"));
-        MainPageObject.constructorNachinki
-                .shouldHave(Condition.cssClass("tab_tab_type_current__2BEPc"));
+        MainPageObject.clickNachinki();
+        sleep(1000);
+
+        assertThat("Выбраны не начинки", MainPageObject.constructorBoolki.toString(), not(containsString("tab_tab_type_current__2BEPc")));
+        assertThat("Начинки не выбраны", MainPageObject.constructorNachinki.toString(), anyOf(containsString("tab_tab_type_current__2BEPc")));
+
+    }
+
+    @After
+    public void tearDown()
+    {
         closeWebDriver();
     }
 

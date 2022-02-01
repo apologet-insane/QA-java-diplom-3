@@ -1,6 +1,6 @@
 package ChromeTest;
 
-import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.Selenide;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -8,8 +8,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import com.*;
+
 import static com.codeborne.selenide.Selenide.*;
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasToString;
 
 
 public class AuthorizationChromeTest {
@@ -21,6 +24,7 @@ public class AuthorizationChromeTest {
 
     @Before
     public void createTestUser() {
+
         String registerRequestBody = "{\"name\":\"" + userName + "\","
                 + "\"password\":\"" + userPassword + "\","
                 + "\"email\":\"" + userMail + "\"}";
@@ -31,6 +35,7 @@ public class AuthorizationChromeTest {
                 .when()
                 .post("https://stellarburgers.nomoreparties.site/api/auth/register");
     }
+
     LoginPageObject loginPageObject =
             open(LoginPageObject.URL, LoginPageObject.class);
     MainPageObject mainPageObject =
@@ -38,62 +43,63 @@ public class AuthorizationChromeTest {
 
     @Test
     @DisplayName("Вход через кнопку Войти в аккаунт на главной странице")
-    public void enterWithButtonOnMainPageTest(){
-        MainPageObject.enterAccount.click();
-        LoginPageObject.fieldLogEmail.setValue(userMail);
-        LoginPageObject.fieldPassword.setValue(userPassword);
-        LoginPageObject.buttonEnterOrRegistration.click();
-        MainPageObject.orderThat.shouldHave(Condition.exactText("Оформить заказ"));
-        closeWebDriver();
+    public void enterWithButtonOnMainPageTest() {
+
+        MainPageObject.clickEnterAccount();
+        LoginPageObject.setLogEmail(userMail);
+        LoginPageObject.setPassword(userPassword);
+        LoginPageObject.clickEnter();
+        assertThat("Вход не выполнен", MainPageObject.orderThat.getText(), hasToString("Оформить заказ"));
 
     }
 
     @Test
     @DisplayName("Вход через кнопку Личный профиль на главной странице")
-    public void enterWithProfileOnMainPageTest(){
-        MainPageObject.personalCabinet.click();
-        LoginPageObject.fieldLogEmail.setValue(userMail);
-        LoginPageObject.fieldPassword.setValue(userPassword);
-        LoginPageObject.buttonEnterOrRegistration.click();
-        MainPageObject.orderThat.shouldHave(Condition.exactText("Оформить заказ"));
-        closeWebDriver();
+    public void enterWithProfileOnMainPageTest() {
+
+        MainPageObject.clickPersonalCabinet();
+        LoginPageObject.setLogEmail(userMail);
+        LoginPageObject.setPassword(userPassword);
+        LoginPageObject.clickEnter();
+        assertThat("Вход не выполнен", MainPageObject.orderThat.getText(), hasToString("Оформить заказ"));
 
     }
 
     @Test
     @DisplayName("Вход через кнопку в форме регистрации")
-    public void enterWithButtonOnRegPageTest(){
-        MainPageObject.personalCabinet.click();
-        LoginPageObject.buttonRegistration.click();
-        LoginPageObject.fromRegistrationToLoginPage.click();
-        LoginPageObject.fieldLogEmail.setValue(userMail);
-        LoginPageObject.fieldPassword.setValue(userPassword);
-        LoginPageObject.buttonEnterOrRegistration.click();
-        MainPageObject.orderThat.shouldHave(Condition.exactText("Оформить заказ"));
-        closeWebDriver();
+    public void enterWithButtonOnRegPageTest() {
+
+        MainPageObject.clickPersonalCabinet();
+        LoginPageObject.clickButtonRegistration();
+        LoginPageObject.clickFromRegistrationToLoginPage();
+        LoginPageObject.setLogEmail(userMail);
+        LoginPageObject.setPassword(userPassword);
+        LoginPageObject.clickEnter();
+        assertThat("Вход не выполнен", MainPageObject.orderThat.getText(), hasToString("Оформить заказ"));
 
     }
 
     @Test
-    @DisplayName("Вход через кнопку в форме регистрации")
-    public void enterWithButtonOnRecoveryPasswordPageTest(){
-        MainPageObject.personalCabinet.click();
-        LoginPageObject.buttonResetPassword.click();
-        LoginPageObject.fromRecoveryPasswordToLoginPage.click();
-        LoginPageObject.fieldLogEmail.setValue(userMail);
-        LoginPageObject.fieldPassword.setValue(userPassword);
-        LoginPageObject.buttonEnterOrRegistration.click();
-        MainPageObject.orderThat.shouldHave(Condition.exactText("Оформить заказ"));
-        closeWebDriver();
+    @DisplayName("Вход через кнопку в форме восстановление пароля")
+    public void enterWithButtonOnRecoveryPasswordPageTest() {
+
+        MainPageObject.clickPersonalCabinet();
+        LoginPageObject.clickButtonResetPassword();
+        LoginPageObject.clickFromReRecoveryPasswordToLoginPage();
+        LoginPageObject.setLogEmail(userMail);
+        LoginPageObject.setPassword(userPassword);
+        LoginPageObject.clickEnter();
+        assertThat("Вход не выполнен", MainPageObject.orderThat.getText(), hasToString("Оформить заказ"));
 
     }
 
     @After
-    public void tearDown(){
+    public void tearDown() {
+
         String registerRequestBody = "{\"password\":\"" + userPassword + "\","
                 + "\"email\":\"" + userMail + "\"}";
 
-        String token =  given()
+        String token = given()
                 .header("Content-type", "application/json")
                 .and()
                 .body(registerRequestBody)
@@ -105,6 +111,12 @@ public class AuthorizationChromeTest {
                 .auth().oauth2(token.substring(7))
                 .when()
                 .delete("https://stellarburgers.nomoreparties.site/api/auth/user");
+
+    }
+
+    @After
+    public void closeWebDriver() {
+        Selenide.closeWebDriver();
 
     }
 

@@ -1,18 +1,21 @@
 package ChromeTest;
 
 import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.Selenide;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
-import io.restassured.RestAssured;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.After;
-import org.junit.Before;
+
 import org.junit.Test;
 import com.*;
 
-import static com.codeborne.selenide.Selenide.closeWebDriver;
 import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Selenide.sleep;
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasToString;
 
 
 public class RegistrationChromeTest {
@@ -27,25 +30,27 @@ public class RegistrationChromeTest {
 
     @Test
     @DisplayName("Успешная регистрация")
-    public void positiveRegistration(){
+    public void positiveRegistration() {
 
-        LoginPageObject.buttonRegistration.click();
-        LoginPageObject.fieldRegEmail.setValue(userMail);
-        LoginPageObject.fieldPassword.setValue(userPassword);
-        LoginPageObject.fieldName.setValue(userName);
-        LoginPageObject.buttonEnterOrRegistration.click();
-        LoginPageObject.zagolovok.shouldHave(Condition.exactText("Вход"));
-        LoginPageObject.buttonEnterOrRegistration.shouldHave(Condition.exactText("Войти"));
-        closeWebDriver();
+        LoginPageObject.clickButtonRegistration();
+        LoginPageObject.setRegEmail(userMail);
+        LoginPageObject.setPassword(userPassword);
+        LoginPageObject.setName(userName);
+        LoginPageObject.clickRegistration();
+        sleep(1000);
+        assertThat("Регистрация не удалась, вы не на экране входа", LoginPageObject.zagolovok.getText(), hasToString("Вход"));
+        assertThat("Регистрация не удалась, нет кнопки Войти", LoginPageObject.buttonEnterOrRegistration.getText(), hasToString("Войти"));
+
 
     }
 
     @Step
-    public void tearDown(){
+    public void tearDown() {
+
         String registerRequestBody = "{\"password\":\"" + userPassword + "\","
                 + "\"email\":\"" + userMail + "\"}";
 
-        String token =  given()
+        String token = given()
                 .header("Content-type", "application/json")
                 .and()
                 .body(registerRequestBody)
@@ -62,21 +67,23 @@ public class RegistrationChromeTest {
 
     @Test
     @DisplayName("Регистрация с паролем короче 6 символов")
-    public void registrationWithShortPassword(){
+    public void registrationWithShortPassword() {
 
         LoginPageObject.buttonRegistration.click();
         LoginPageObject.fieldRegEmail.setValue(userMail);
         LoginPageObject.fieldPassword.setValue(shortUserPassword);
-        LoginPageObject.fieldName.setValue(userName);
+        LoginPageObject.setLogEmail(userName);
         LoginPageObject.buttonEnterOrRegistration.click();
         LoginPageObject.zagolovok.shouldHave(Condition.exactText("Регистрация"));
         LoginPageObject.passwordError.shouldBe(Condition.visible);
-        LoginPageObject.passwordError.shouldHave(Condition.exactText("Некорректный пароль"));
-        closeWebDriver();
+        assertThat("Уведомление о коротком пароле не появилось", LoginPageObject.passwordError.getText(), hasToString("Некорректный пароль"));
 
     }
 
-
+    @After
+    public void closeWebDriver() {
+        Selenide.closeWebDriver();
+    }
 
 
 }
