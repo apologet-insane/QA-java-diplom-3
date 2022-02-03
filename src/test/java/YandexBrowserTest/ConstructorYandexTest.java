@@ -1,5 +1,6 @@
 package YandexBrowserTest;
 
+import com.codeborne.selenide.Configuration;
 import io.qameta.allure.junit4.DisplayName;
 import org.junit.After;
 import org.junit.Before;
@@ -13,6 +14,13 @@ import static org.hamcrest.Matchers.containsString;
 
 
 public class ConstructorYandexTest {
+
+    @Before
+    public void setUp() {
+
+        Configuration.startMaximized = true;
+
+    }
 
     @Before
     public void before() {
@@ -61,10 +69,8 @@ public class ConstructorYandexTest {
     }
 
     @After
-    public void tearDown()
-    {
+    public void tearDown() {
         closeWebDriver();
     }
-
 
 }

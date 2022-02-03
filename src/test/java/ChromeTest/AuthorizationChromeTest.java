@@ -1,5 +1,6 @@
 package ChromeTest;
 
+import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
@@ -21,6 +22,11 @@ public class AuthorizationChromeTest {
     public static String userPassword = RandomStringUtils.randomAlphabetic(10);
     public static String userMail = RandomStringUtils.randomAlphabetic(5) + "@" + RandomStringUtils.randomAlphabetic(5) + ".ru";
 
+    @Before
+    public void setUp() {
+
+        Configuration.startMaximized = true;
+    }
 
     @Before
     public void createTestUser() {
@@ -36,14 +42,13 @@ public class AuthorizationChromeTest {
                 .post("https://stellarburgers.nomoreparties.site/api/auth/register");
     }
 
-    LoginPageObject loginPageObject =
-            open(LoginPageObject.URL, LoginPageObject.class);
-    MainPageObject mainPageObject =
-            open(MainPageObject.URL, MainPageObject.class);
-
     @Test
     @DisplayName("Вход через кнопку Войти в аккаунт на главной странице")
     public void enterWithButtonOnMainPageTest() {
+        LoginPageObject loginPageObject =
+                open(LoginPageObject.URL, LoginPageObject.class);
+        MainPageObject mainPageObject =
+                open(MainPageObject.URL, MainPageObject.class);
 
         MainPageObject.clickEnterAccount();
         LoginPageObject.setLogEmail(userMail);
@@ -56,6 +61,10 @@ public class AuthorizationChromeTest {
     @Test
     @DisplayName("Вход через кнопку Личный профиль на главной странице")
     public void enterWithProfileOnMainPageTest() {
+        LoginPageObject loginPageObject =
+                open(LoginPageObject.URL, LoginPageObject.class);
+        MainPageObject mainPageObject =
+                open(MainPageObject.URL, MainPageObject.class);
 
         MainPageObject.clickPersonalCabinet();
         LoginPageObject.setLogEmail(userMail);
@@ -68,6 +77,10 @@ public class AuthorizationChromeTest {
     @Test
     @DisplayName("Вход через кнопку в форме регистрации")
     public void enterWithButtonOnRegPageTest() {
+        LoginPageObject loginPageObject =
+                open(LoginPageObject.URL, LoginPageObject.class);
+        MainPageObject mainPageObject =
+                open(MainPageObject.URL, MainPageObject.class);
 
         MainPageObject.clickPersonalCabinet();
         LoginPageObject.clickButtonRegistration();
@@ -82,6 +95,10 @@ public class AuthorizationChromeTest {
     @Test
     @DisplayName("Вход через кнопку в форме восстановление пароля")
     public void enterWithButtonOnRecoveryPasswordPageTest() {
+        LoginPageObject loginPageObject =
+                open(LoginPageObject.URL, LoginPageObject.class);
+        MainPageObject mainPageObject =
+                open(MainPageObject.URL, MainPageObject.class);
 
         MainPageObject.clickPersonalCabinet();
         LoginPageObject.clickButtonResetPassword();
@@ -116,9 +133,8 @@ public class AuthorizationChromeTest {
 
     @After
     public void closeWebDriver() {
+
         Selenide.closeWebDriver();
-
     }
-
 
 }

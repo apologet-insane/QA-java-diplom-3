@@ -3,6 +3,7 @@ package ChromeTest;
 
 import com.ProfilePageObject;
 
+import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
@@ -27,6 +28,13 @@ public class ProfileChromeTest {
     public static String userMail = RandomStringUtils.randomAlphabetic(5) + "@" + RandomStringUtils.randomAlphabetic(5) + ".ru";
 
     @Before
+    public void setUp() {
+
+        Configuration.startMaximized = true;
+
+    }
+
+    @Before
     public void createTestUser() {
 
         String registerRequestBody = "{\"name\":\"" + userName + "\","
@@ -40,18 +48,15 @@ public class ProfileChromeTest {
                 .post("https://stellarburgers.nomoreparties.site/api/auth/register");
     }
 
-    LoginPageObject loginPageObject =
-            open(LoginPageObject.URL, LoginPageObject.class);
-
-    ProfilePageObject profilePageObject =
-            open(ProfilePageObject.URL, ProfilePageObject.class);
-
-    MainPageObject mainPageObject =
-            open(MainPageObject.URL, MainPageObject.class);
-
     @Test
     @DisplayName("Вход в Личный кабинет с главной страницы")
     public void enterProfileFromMainPage() {
+        LoginPageObject loginPageObject =
+                open(LoginPageObject.URL, LoginPageObject.class);
+        ProfilePageObject profilePageObject =
+                open(ProfilePageObject.URL, ProfilePageObject.class);
+        MainPageObject mainPageObject =
+                open(MainPageObject.URL, MainPageObject.class);
 
         MainPageObject.clickEnterAccount();
         LoginPageObject.setLogEmail(userMail);
@@ -65,6 +70,12 @@ public class ProfileChromeTest {
     @Test
     @DisplayName("Переход из личного кабинета на главную страницу через Конструктор")
     public void fromProfileToMainPageWithConstructor() {
+        LoginPageObject loginPageObject =
+                open(LoginPageObject.URL, LoginPageObject.class);
+        ProfilePageObject profilePageObject =
+                open(ProfilePageObject.URL, ProfilePageObject.class);
+        MainPageObject mainPageObject =
+                open(MainPageObject.URL, MainPageObject.class);
 
         MainPageObject.clickEnterAccount();
         LoginPageObject.setLogEmail(userMail);
@@ -78,6 +89,12 @@ public class ProfileChromeTest {
     @Test
     @DisplayName("Переход из личного кабинета на главную страницу через логотип")
     public void fromProfileToMainPageWithLogo() {
+        LoginPageObject loginPageObject =
+                open(LoginPageObject.URL, LoginPageObject.class);
+        ProfilePageObject profilePageObject =
+                open(ProfilePageObject.URL, ProfilePageObject.class);
+        MainPageObject mainPageObject =
+                open(MainPageObject.URL, MainPageObject.class);
 
         MainPageObject.clickEnterAccount();
         LoginPageObject.setLogEmail(userMail);
@@ -91,6 +108,12 @@ public class ProfileChromeTest {
     @Test
     @DisplayName("Выход из аккаунта")
     public void exitFromAccount() {
+        LoginPageObject loginPageObject =
+                open(LoginPageObject.URL, LoginPageObject.class);
+        ProfilePageObject profilePageObject =
+                open(ProfilePageObject.URL, ProfilePageObject.class);
+        MainPageObject mainPageObject =
+                open(MainPageObject.URL, MainPageObject.class);
 
         MainPageObject.clickEnterAccount();
         LoginPageObject.setLogEmail(userMail);

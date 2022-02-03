@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: YandexBrowserTest.AuthorizationYandexTest
 -------------------------------------------------------------------------------
-Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 58.175 s - in YandexBrowserTest.AuthorizationYandexTest
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 250.879 s - in YandexBrowserTest.AuthorizationYandexTest

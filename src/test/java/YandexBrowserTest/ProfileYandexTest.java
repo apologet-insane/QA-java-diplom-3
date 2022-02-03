@@ -1,6 +1,7 @@
 package YandexBrowserTest;
 
 import com.ProfilePageObject;
+import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
@@ -23,6 +24,12 @@ public class ProfileYandexTest {
     public static String userPassword = RandomStringUtils.randomAlphabetic(10);
     public static String userMail = RandomStringUtils.randomAlphabetic(5) + "@" + RandomStringUtils.randomAlphabetic(5) + ".ru";
 
+    @Before
+    public void setUp() {
+
+        Configuration.startMaximized = true;
+
+    }
 
     @Before
     public void createTestUser() {

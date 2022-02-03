@@ -35,8 +35,9 @@
         </dependency>
         <dependency>
             <groupId>com.codeborne</groupId>
-            <artifactId>selenide-junit4</artifactId>
-            <version>6.2.0</version>
+            <artifactId>selenide</artifactId>
+            <version>5.23.2</version>
+            <scope>compile</scope>
         </dependency>
 
        <dependency>

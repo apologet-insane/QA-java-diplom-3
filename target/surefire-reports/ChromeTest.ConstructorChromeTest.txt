@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: ChromeTest.ConstructorChromeTest
 -------------------------------------------------------------------------------
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 19.802 s - in ChromeTest.ConstructorChromeTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 28.198 s - in ChromeTest.ConstructorChromeTest
